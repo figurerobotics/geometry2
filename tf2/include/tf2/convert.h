@@ -35,10 +35,9 @@
 #include <array>
 #include <string>
 
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "rosidl_runtime_cpp/traits.hpp"
 #include "tf2/exceptions.h"
 #include "tf2/impl/convert.h"
+#include "tf2/msg.h"
 #include "tf2/transform_datatypes.h"
 #include "tf2/visibility_control.h"
 
@@ -55,8 +54,7 @@ namespace tf2 {
  * This method needs to be implemented by client library developers
  */
 template <class T>
-void doTransform(const T& data_in, T& data_out,
-                 const geometry_msgs::msg::TransformStamped& transform);
+void doTransform(const T& data_in, T& data_out, const msg::TransformStamped& transform);
 
 /**\brief Get the timestamp from data
  * \param[in] t The data input.
@@ -142,8 +140,7 @@ void fromMsg(const A&, B& b);
  */
 template <class A, class B>
 void convert(const A& a, B& b) {
-  impl::Converter<rosidl_generator_traits::is_message<A>::value,
-                  rosidl_generator_traits::is_message<B>::value>::convert(a, b);
+  impl::Converter<msg::is_message<A>::value, msg::is_message<B>::value>::convert(a, b);
 }
 
 template <class A>

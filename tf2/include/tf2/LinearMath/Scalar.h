@@ -45,9 +45,12 @@ the original software.
 #else
 //#define TF2_HAS_ALIGNED_ALLOCATOR
 #pragma warning(disable : 4324)  // disable padding warning
-//			#pragma warning(disable:4530) // Disable the exception disable but used in MSCV
-//Stl warning. 			#pragma warning(disable:4996) //Turn off warnings about deprecated C routines 			#pragma
-//warning(disable:4786) // Disable the "debug name too long" warning
+//			#pragma warning(disable:4530) // Disable the exception disable but used in
+// MSCV
+// Stl warning. 			#pragma warning(disable:4996) //Turn off warnings about
+// deprecated
+// C routines 			#pragma warning(disable:4786) // Disable the "debug name too long"
+// warning
 
 #define TF2SIMD_FORCE_INLINE __forceinline
 #define ATTRIBUTE_ALIGNED16(a) __declspec(align(16)) a
@@ -308,7 +311,7 @@ TF2SIMD_FORCE_INLINE unsigned short tf2SwapEndian(short val) {
 
 /// tf2SwapFloat uses using char pointers to swap the endianness
 ////tf2SwapFloat/tf2SwapDouble will NOT return a float, because the machine might 'correct' invalid
-///floating point values Not all values of sign/exponent/mantissa are valid floating point numbers
+/// floating point values Not all values of sign/exponent/mantissa are valid floating point numbers
 /// according to IEEE 754. When a floating point unit is faced with an invalid value, it may
 /// actually change the value, or worse, throw an exception. In most systems, running user mode
 /// code, you wouldn't get an exception, but instead the hardware/os/runtime will 'fix' the number
