@@ -9,6 +9,9 @@ cc_library(
         "include/tf2/**/*.h",
         "include/tf2/**/*.inl",
     ]),
+    deps = [
+        "@fmt"
+    ],
     copts = ["--std=c++20"],
     strip_include_prefix = "include",
 )
