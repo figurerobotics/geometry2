@@ -32,12 +32,10 @@
 #include <vector>
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
-
 #include "tf2/time.h"
 #include "tf2/visibility_control.h"
 
-namespace tf2
-{
+namespace tf2 {
 
 /**
  * \brief Interface for providing coordinate transforms between any two frames in a system.
@@ -45,19 +43,16 @@ namespace tf2
  * This class provides a simple abstract interface for looking up relationships between arbitrary
  * frames of a system.
  */
-class BufferCoreInterface
-{
-public:
+class BufferCoreInterface {
+ public:
   TF2_PUBLIC
-  virtual
-  ~BufferCoreInterface() = default;
+  virtual ~BufferCoreInterface() = default;
 
   /**
    * \brief Clear internal state data.
    */
   TF2_PUBLIC
-  virtual void
-  clear() = 0;
+  virtual void clear() = 0;
 
   /**
    * \brief Get the transform between two frames by frame ID.
@@ -67,11 +62,9 @@ public:
    * \return The transform between the frames.
    */
   TF2_PUBLIC
-  virtual geometry_msgs::msg::TransformStamped
-  lookupTransform(
-    const std::string & target_frame,
-    const std::string & source_frame,
-    const tf2::TimePoint & time) const = 0;
+  virtual geometry_msgs::msg::TransformStamped lookupTransform(
+      const std::string& target_frame, const std::string& source_frame,
+      const tf2::TimePoint& time) const = 0;
 
   /**
    * \brief Get the transform between two frames by frame ID assuming fixed frame.
@@ -84,13 +77,10 @@ public:
    * \return The transform between the frames.
    */
   TF2_PUBLIC
-  virtual geometry_msgs::msg::TransformStamped
-  lookupTransform(
-    const std::string & target_frame,
-    const tf2::TimePoint & target_time,
-    const std::string & source_frame,
-    const tf2::TimePoint & source_time,
-    const std::string & fixed_frame) const = 0;
+  virtual geometry_msgs::msg::TransformStamped lookupTransform(
+      const std::string& target_frame, const tf2::TimePoint& target_time,
+      const std::string& source_frame, const tf2::TimePoint& source_time,
+      const std::string& fixed_frame) const = 0;
 
   /**
    * \brief Test if a transform is possible.
@@ -102,12 +92,8 @@ public:
    * \return true if the transform is possible, false otherwise.
    */
   TF2_PUBLIC
-  virtual bool
-  canTransform(
-    const std::string & target_frame,
-    const std::string & source_frame,
-    const tf2::TimePoint & time,
-    std::string * error_msg) const = 0;
+  virtual bool canTransform(const std::string& target_frame, const std::string& source_frame,
+                            const tf2::TimePoint& time, std::string* error_msg) const = 0;
 
   /**
    * \brief Test if a transform is possible.
@@ -121,23 +107,17 @@ public:
    * \return true if the transform is possible, false otherwise.
    */
   TF2_PUBLIC
-  virtual bool
-  canTransform(
-    const std::string & target_frame,
-    const tf2::TimePoint & target_time,
-    const std::string & source_frame,
-    const tf2::TimePoint & source_time,
-    const std::string & fixed_frame,
-    std::string * error_msg) const = 0;
+  virtual bool canTransform(const std::string& target_frame, const tf2::TimePoint& target_time,
+                            const std::string& source_frame, const tf2::TimePoint& source_time,
+                            const std::string& fixed_frame, std::string* error_msg) const = 0;
 
   /**
    * \brief Get all frames that exist in the system.
    * \return all frame names in a vector.
    */
   TF2_PUBLIC
-  virtual std::vector<std::string>
-  getAllFrameNames() const = 0;
-};   // class BufferCoreInterface
+  virtual std::vector<std::string> getAllFrameNames() const = 0;
+};  // class BufferCoreInterface
 
 }  // namespace tf2
 

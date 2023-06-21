@@ -31,23 +31,21 @@
 #define TF2__TIME_CACHE_H_
 
 #include <chrono>
-#include <memory>
 #include <list>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <utility>
 
-#include "tf2/visibility_control.h"
-#include "tf2/transform_storage.h"
 #include "tf2/exceptions.h"
+#include "tf2/transform_storage.h"
+#include "tf2/visibility_control.h"
 
-namespace tf2
-{
+namespace tf2 {
 typedef std::pair<tf2::TimePoint, tf2::CompactFrameID> P_TimeAndFrameID;
 
-class TimeCacheInterface
-{
-public:
+class TimeCacheInterface {
+ public:
   TF2_PUBLIC
   virtual ~TimeCacheInterface() = default;
 
@@ -55,13 +53,12 @@ public:
    * returns false if data unavailable (should be thrown as lookup exception)
    */
   TF2_PUBLIC
-  virtual bool getData(
-    tf2::TimePoint time, tf2::TransformStorage & data_out,
-    std::string * error_str = 0, TF2Error * error_code = 0) = 0;
+  virtual bool getData(tf2::TimePoint time, tf2::TransformStorage& data_out,
+                       std::string* error_str = 0, TF2Error* error_code = 0) = 0;
 
   /** \brief Insert data into the cache */
   TF2_PUBLIC
-  virtual bool insertData(const tf2::TransformStorage & new_data) = 0;
+  virtual bool insertData(const tf2::TransformStorage& new_data) = 0;
 
   /** @brief Clear the list of stored values */
   TF2_PUBLIC
@@ -69,11 +66,12 @@ public:
 
   /** \brief Retrieve the parent at a specific time */
   TF2_PUBLIC
-  virtual CompactFrameID getParent(
-    tf2::TimePoint time, std::string * error_str = 0, TF2Error * error_code = 0) = 0;
+  virtual CompactFrameID getParent(tf2::TimePoint time, std::string* error_str = 0,
+                                   TF2Error* error_code = 0) = 0;
 
   /**
-   * \brief Get the latest time stored in this cache, and the parent associated with it.  Returns parent = 0 if no data.
+   * \brief Get the latest time stored in this cache, and the parent associated with it.  Returns
+   * parent = 0 if no data.
    */
   TF2_PUBLIC
   virtual P_TimeAndFrameID getLatestTimeAndParent() = 0;
@@ -101,9 +99,8 @@ constexpr tf2::Duration TIMECACHE_DEFAULT_MAX_STORAGE_TIME = std::chrono::second
  * This builds and maintains a list of timestamped
  * data.  And provides lookup functions to get
  * data out as a function of time. */
-class TimeCache : public TimeCacheInterface
-{
-public:
+class TimeCache : public TimeCacheInterface {
+ public:
   /// Number of nano-seconds to not interpolate below.
   TF2_PUBLIC
   static const int MIN_INTERPOLATION_DISTANCE = 5;
@@ -117,16 +114,15 @@ public:
   /// Virtual methods
 
   TF2_PUBLIC
-  virtual bool getData(
-    tf2::TimePoint time, tf2::TransformStorage & data_out,
-    std::string * error_str = 0, TF2Error * error_code = 0);
+  virtual bool getData(tf2::TimePoint time, tf2::TransformStorage& data_out,
+                       std::string* error_str = 0, TF2Error* error_code = 0);
   TF2_PUBLIC
-  virtual bool insertData(const tf2::TransformStorage & new_data);
+  virtual bool insertData(const tf2::TransformStorage& new_data);
   TF2_PUBLIC
   virtual void clearList();
   TF2_PUBLIC
-  virtual tf2::CompactFrameID getParent(
-    tf2::TimePoint time, std::string * error_str = 0, TF2Error * error_code = 0);
+  virtual tf2::CompactFrameID getParent(tf2::TimePoint time, std::string* error_str = 0,
+                                        TF2Error* error_code = 0);
   TF2_PUBLIC
   virtual P_TimeAndFrameID getLatestTimeAndParent();
 
@@ -138,42 +134,38 @@ public:
   TF2_PUBLIC
   virtual TimePoint getOldestTimestamp();
 
-private:
+ private:
   typedef std::list<TransformStorage> L_TransformStorage;
   L_TransformStorage storage_;
 
   tf2::Duration max_storage_time_;
 
-
   // A helper function for getData
   // Assumes storage is already locked for it
-  inline uint8_t findClosest(
-    tf2::TransformStorage * & one, TransformStorage * & two,
-    tf2::TimePoint target_time, std::string * error_str = 0, TF2Error * error_code = 0);
+  inline uint8_t findClosest(tf2::TransformStorage*& one, TransformStorage*& two,
+                             tf2::TimePoint target_time, std::string* error_str = 0,
+                             TF2Error* error_code = 0);
 
-  inline void interpolate(
-    const tf2::TransformStorage & one, const tf2::TransformStorage & two,
-    tf2::TimePoint time, tf2::TransformStorage & output);
+  inline void interpolate(const tf2::TransformStorage& one, const tf2::TransformStorage& two,
+                          tf2::TimePoint time, tf2::TransformStorage& output);
 
   void pruneList();
 };
 
-class StaticCache : public TimeCacheInterface
-{
-public:
+class StaticCache : public TimeCacheInterface {
+ public:
   /// Virtual methods
   TF2_PUBLIC
-  virtual bool getData(
-    TimePoint time, TransformStorage & data_out,
-    std::string * error_str = 0, TF2Error * error_code = 0);
+  virtual bool getData(TimePoint time, TransformStorage& data_out, std::string* error_str = 0,
+                       TF2Error* error_code = 0);
   // returns false if data unavailable (should be thrown as lookup exception
   TF2_PUBLIC
-  virtual bool insertData(const TransformStorage & new_data);
+  virtual bool insertData(const TransformStorage& new_data);
   TF2_PUBLIC
   virtual void clearList();
   TF2_PUBLIC
-  virtual CompactFrameID getParent(
-    TimePoint time, std::string * error_str = 0, TF2Error * error_code = 0);
+  virtual CompactFrameID getParent(TimePoint time, std::string* error_str = 0,
+                                   TF2Error* error_code = 0);
   TF2_PUBLIC
   virtual P_TimeAndFrameID getLatestTimeAndParent();
 
@@ -185,7 +177,7 @@ public:
   TF2_PUBLIC
   virtual TimePoint getOldestTimestamp();
 
-private:
+ private:
   TransformStorage storage_;
 };
 }  // namespace tf2

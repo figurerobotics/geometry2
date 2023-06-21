@@ -31,14 +31,13 @@
 #ifndef TF2__EXCEPTIONS_H_
 #define TF2__EXCEPTIONS_H_
 
-#include <stdexcept>
 #include <cstdint>
+#include <stdexcept>
 #include <string>
 
 #include "tf2/visibility_control.h"
 
-namespace tf2
-{
+namespace tf2 {
 
 // TODO(clalancette): We can remove these workarounds when we remove the
 // deprecated TF2Error enums.
@@ -55,8 +54,7 @@ namespace tf2
 #pragma clang diagnostic ignored "-Wc++17-extensions"
 #endif
 
-enum class TF2Error : std::uint8_t
-{
+enum class TF2Error : std::uint8_t {
   // While the TF2_ prefix here is a bit redundant, it also prevents us from
   // colliding with Windows defines (specifically, NO_ERROR).
   TF2_NO_ERROR = 0,
@@ -92,32 +90,24 @@ enum class TF2Error : std::uint8_t
  * This inherits from ros::exception
  * which inherits from std::runtime_exception
  */
-class TransformException : public std::runtime_error
-{
-public:
+class TransformException : public std::runtime_error {
+ public:
   TF2_PUBLIC
   explicit TransformException(const std::string errorDescription)
-  : std::runtime_error(errorDescription)
-  {
-  }
+      : std::runtime_error(errorDescription) {}
 };
-
 
 /** \brief An exception class to notify of no connection
  *
  * This is an exception class to be thrown in the case
  * that the Reference Frame tree is not connected between
  * the frames requested. */
-class ConnectivityException : public TransformException
-{
-public:
+class ConnectivityException : public TransformException {
+ public:
   TF2_PUBLIC
   explicit ConnectivityException(const std::string errorDescription)
-  : tf2::TransformException(errorDescription)
-  {
-  }
+      : tf2::TransformException(errorDescription) {}
 };
-
 
 /** \brief An exception class to notify of bad frame number
  *
@@ -127,66 +117,55 @@ public:
  * being published, or a parent frame was not set correctly
  * causing the tree to be broken.
  */
-class LookupException : public TransformException
-{
-public:
+class LookupException : public TransformException {
+ public:
   TF2_PUBLIC
   explicit LookupException(const std::string errorDescription)
-  : tf2::TransformException(errorDescription)
-  {
-  }
+      : tf2::TransformException(errorDescription) {}
 };
 
-/** \brief An exception class to notify that the requested value would have required extrapolation beyond current limits.
+/** \brief An exception class to notify that the requested value would have required extrapolation
+ * beyond current limits.
  *
  */
-class ExtrapolationException : public TransformException
-{
-public:
+class ExtrapolationException : public TransformException {
+ public:
   TF2_PUBLIC
   explicit ExtrapolationException(const std::string errorDescription)
-  : tf2::TransformException(errorDescription)
-  {
-  }
+      : tf2::TransformException(errorDescription) {}
 };
 
-/** \brief An exception class to notify that the requested value would have required extrapolation in the past.
+/** \brief An exception class to notify that the requested value would have required extrapolation
+ * in the past.
  *
  */
-class BackwardExtrapolationException : public ExtrapolationException
-{
-public:
+class BackwardExtrapolationException : public ExtrapolationException {
+ public:
   TF2_PUBLIC
   explicit BackwardExtrapolationException(const std::string errorDescription)
-  : ExtrapolationException(errorDescription)
-  {
-  }
+      : ExtrapolationException(errorDescription) {}
 };
 
-/** \brief An exception class to notify that the requested value would have required extrapolation in the future.
+/** \brief An exception class to notify that the requested value would have required extrapolation
+ * in the future.
  *
  */
-class ForwardExtrapolationException : public ExtrapolationException
-{
-public:
+class ForwardExtrapolationException : public ExtrapolationException {
+ public:
   TF2_PUBLIC
   explicit ForwardExtrapolationException(const std::string errorDescription)
-  : ExtrapolationException(errorDescription)
-  {
-  }
+      : ExtrapolationException(errorDescription) {}
 };
 
-/** \brief An exception class to notify that the requested value would have required extrapolation, but only zero or one data is available, so not enough for extrapolation.
+/** \brief An exception class to notify that the requested value would have required extrapolation,
+ * but only zero or one data is available, so not enough for extrapolation.
  *
  */
-class NoDataForExtrapolationException : public ExtrapolationException
-{
-public:
+class NoDataForExtrapolationException : public ExtrapolationException {
+ public:
   TF2_PUBLIC
   explicit NoDataForExtrapolationException(const std::string errorDescription)
-  : ExtrapolationException(errorDescription)
-  {
-  }
+      : ExtrapolationException(errorDescription) {}
 };
 
 /** \brief An exception class to notify that one of the arguments is invalid
@@ -194,26 +173,22 @@ public:
  * usually it's an uninitalized Quaternion (0,0,0,0)
  *
  */
-class InvalidArgumentException : public TransformException
-{
-public:
+class InvalidArgumentException : public TransformException {
+ public:
   TF2_PUBLIC
   explicit InvalidArgumentException(const std::string errorDescription)
-  : tf2::TransformException(errorDescription) {}
+      : tf2::TransformException(errorDescription) {}
 };
 
 /** \brief An exception class to notify that a timeout has occured
  *
  *
  */
-class TimeoutException : public TransformException
-{
-public:
+class TimeoutException : public TransformException {
+ public:
   TF2_PUBLIC
   explicit TimeoutException(const std::string errorDescription)
-  : tf2::TransformException(errorDescription)
-  {
-  }
+      : tf2::TransformException(errorDescription) {}
 };
 }  // namespace tf2
 #endif  // TF2__EXCEPTIONS_H_

@@ -33,87 +33,73 @@
 #include <string>
 #include <utility>
 
-#include "tf2/time_cache.h"
-#include "tf2/exceptions.h"
-
-#include "tf2/LinearMath/Vector3.h"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2/LinearMath/Transform.h"
+#include "tf2/LinearMath/Vector3.h"
+#include "tf2/exceptions.h"
+#include "tf2/time_cache.h"
 
-namespace tf2
-{
+namespace tf2 {
 
-TransformStorage::TransformStorage()
-{
-}
+TransformStorage::TransformStorage() {}
 
-TransformStorage::TransformStorage(
-  const TimePoint & stamp, const Quaternion & q, const Vector3 & t,
-  CompactFrameID frame_id, CompactFrameID child_frame_id)
-: rotation_(q),
-  translation_(t),
-  stamp_(stamp),
-  frame_id_(frame_id),
-  child_frame_id_(child_frame_id)
-{
-}
+TransformStorage::TransformStorage(const TimePoint& stamp, const Quaternion& q, const Vector3& t,
+                                   CompactFrameID frame_id, CompactFrameID child_frame_id)
+    : rotation_(q),
+      translation_(t),
+      stamp_(stamp),
+      frame_id_(frame_id),
+      child_frame_id_(child_frame_id) {}
 
-TimeCache::TimeCache(tf2::Duration max_storage_time)
-: max_storage_time_(max_storage_time)
-{}
+TimeCache::TimeCache(tf2::Duration max_storage_time) : max_storage_time_(max_storage_time) {}
 
 // Avoid ODR collisions https://github.com/ros/geometry2/issues/175
-namespace cache
-{
+namespace cache {
 // hoisting these into separate functions causes an ~8% speedup.
 // Removing calling them altogether adds another ~10%
-void createExtrapolationException1(
-  TimePoint t0, TimePoint t1, std::string * error_str, TF2Error * error_code)
-{
+void createExtrapolationException1(TimePoint t0, TimePoint t1, std::string* error_str,
+                                   TF2Error* error_code) {
   if (error_code) {
     *error_code = TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR;
   }
   if (error_str) {
     std::stringstream ss;
-    ss << "Lookup would require extrapolation at time " << displayTimePoint(t0) <<
-      ", but only time " << displayTimePoint(t1) << " is in the buffer";
+    ss << "Lookup would require extrapolation at time " << displayTimePoint(t0)
+       << ", but only time " << displayTimePoint(t1) << " is in the buffer";
     *error_str = ss.str();
   }
 }
 
-void createExtrapolationException2(
-  TimePoint t0, TimePoint t1, std::string * error_str, TF2Error * error_code)
-{
+void createExtrapolationException2(TimePoint t0, TimePoint t1, std::string* error_str,
+                                   TF2Error* error_code) {
   if (error_code) {
     *error_code = TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR;
   }
   if (error_str) {
     std::stringstream ss;
-    ss << "Lookup would require extrapolation into the future.  Requested time " <<
-      displayTimePoint(t0) << " but the latest data is at time " << displayTimePoint(t1);
+    ss << "Lookup would require extrapolation into the future.  Requested time "
+       << displayTimePoint(t0) << " but the latest data is at time " << displayTimePoint(t1);
     *error_str = ss.str();
   }
 }
 
-void createExtrapolationException3(
-  TimePoint t0, TimePoint t1, std::string * error_str, TF2Error * error_code)
-{
+void createExtrapolationException3(TimePoint t0, TimePoint t1, std::string* error_str,
+                                   TF2Error* error_code) {
   if (error_code) {
     *error_code = TF2Error::TF2_BACKWARD_EXTRAPOLATION_ERROR;
   }
   if (error_str) {
     std::stringstream ss;
-    ss << "Lookup would require extrapolation into the past.  Requested time " << displayTimePoint(
-      t0) << " but the earliest data is at time " << displayTimePoint(t1);
+    ss << "Lookup would require extrapolation into the past.  Requested time "
+       << displayTimePoint(t0) << " but the earliest data is at time " << displayTimePoint(t1);
     *error_str = ss.str();
   }
 }
 }  // namespace cache
 
-uint8_t TimeCache::findClosest(
-  TransformStorage * & one, TransformStorage * & two,
-  TimePoint target_time, std::string * error_str, TF2Error * error_code)
-{
+uint8_t TimeCache::findClosest(TransformStorage*& one, TransformStorage*& two,
+                               TimePoint target_time, std::string* error_str,
+                               TF2Error* error_code) {
   if (error_code) {
     *error_code = TF2Error::TF2_NO_ERROR;
   }
@@ -134,7 +120,7 @@ uint8_t TimeCache::findClosest(
 
   // One value stored
   if (++storage_.begin() == storage_.end()) {
-    TransformStorage & ts = *storage_.begin();
+    TransformStorage& ts = *storage_.begin();
     if (ts.stamp_ == target_time) {
       one = &ts;
       return 1;
@@ -153,7 +139,7 @@ uint8_t TimeCache::findClosest(
   } else if (target_time == earliest_time) {
     one = &(*storage_.rbegin());
     return 1;
-  } else {   // Catch cases that would require extrapolation
+  } else {  // Catch cases that would require extrapolation
     if (target_time > latest_time) {
       cache::createExtrapolationException2(target_time, latest_time, error_str, error_code);
       return 0;
@@ -176,15 +162,13 @@ uint8_t TimeCache::findClosest(
   }
 
   // Finally the case were somewhere in the middle  Guarenteed no extrapolation :-)
-  one = &*(storage_it);  // Older
+  one = &*(storage_it);    // Older
   two = &*(--storage_it);  // Newer
   return 2;
 }
 
-void TimeCache::interpolate(
-  const TransformStorage & one, const TransformStorage & two,
-  TimePoint time, TransformStorage & output)
-{
+void TimeCache::interpolate(const TransformStorage& one, const TransformStorage& two,
+                            TimePoint time, TransformStorage& output) {
   // Check for zero distance case
   if (two.stamp_ == one.stamp_) {
     output = two;
@@ -192,7 +176,7 @@ void TimeCache::interpolate(
   }
   // Calculate the ratio
   tf2Scalar ratio = static_cast<double>((time - one.stamp_).count()) /
-    static_cast<double>((two.stamp_ - one.stamp_).count());
+                    static_cast<double>((two.stamp_ - one.stamp_).count());
 
   // Interpolate translation
   output.translation_.setInterpolate3(one.translation_, two.translation_, ratio);
@@ -205,13 +189,11 @@ void TimeCache::interpolate(
   output.child_frame_id_ = one.child_frame_id_;
 }
 
-bool TimeCache::getData(
-  TimePoint time, TransformStorage & data_out,
-  std::string * error_str, TF2Error * error_code)
-{
+bool TimeCache::getData(TimePoint time, TransformStorage& data_out, std::string* error_str,
+                        TF2Error* error_code) {
   // returns false if data not available
-  TransformStorage * p_temp_1;
-  TransformStorage * p_temp_2;
+  TransformStorage* p_temp_1;
+  TransformStorage* p_temp_2;
 
   int num_nodes = findClosest(p_temp_1, p_temp_2, time, error_str, error_code);
   if (num_nodes == 0) {
@@ -230,11 +212,9 @@ bool TimeCache::getData(
   return true;
 }
 
-CompactFrameID TimeCache::getParent(
-  TimePoint time, std::string * error_str, TF2Error * error_code)
-{
-  TransformStorage * p_temp_1;
-  TransformStorage * p_temp_2;
+CompactFrameID TimeCache::getParent(TimePoint time, std::string* error_str, TF2Error* error_code) {
+  TransformStorage* p_temp_1;
+  TransformStorage* p_temp_2;
 
   int num_nodes = findClosest(p_temp_1, p_temp_2, time, error_str, error_code);
   if (num_nodes == 0) {
@@ -244,8 +224,7 @@ CompactFrameID TimeCache::getParent(
   return p_temp_1->frame_id_;
 }
 
-bool TimeCache::insertData(const TransformStorage & new_data)
-{
+bool TimeCache::insertData(const TransformStorage& new_data) {
   L_TransformStorage::iterator storage_it = storage_.begin();
 
   if (storage_it != storage_.end()) {
@@ -266,28 +245,20 @@ bool TimeCache::insertData(const TransformStorage & new_data)
   return true;
 }
 
-void TimeCache::clearList()
-{
-  storage_.clear();
-}
+void TimeCache::clearList() { storage_.clear(); }
 
-unsigned int TimeCache::getListLength()
-{
-  return (unsigned int)storage_.size();
-}
+unsigned int TimeCache::getListLength() { return (unsigned int)storage_.size(); }
 
-P_TimeAndFrameID TimeCache::getLatestTimeAndParent()
-{
+P_TimeAndFrameID TimeCache::getLatestTimeAndParent() {
   if (storage_.empty()) {
     return std::make_pair(TimePoint(), 0);
   }
 
-  const TransformStorage & ts = storage_.front();
+  const TransformStorage& ts = storage_.front();
   return std::make_pair(ts.stamp_, ts.frame_id_);
 }
 
-TimePoint TimeCache::getLatestTimestamp()
-{
+TimePoint TimeCache::getLatestTimestamp() {
   // empty list case
   if (storage_.empty()) {
     return TimePoint();
@@ -295,8 +266,7 @@ TimePoint TimeCache::getLatestTimestamp()
   return storage_.front().stamp_;
 }
 
-TimePoint TimeCache::getOldestTimestamp()
-{
+TimePoint TimeCache::getOldestTimestamp() {
   // empty list case
   if (storage_.empty()) {
     return TimePoint();
@@ -304,8 +274,7 @@ TimePoint TimeCache::getOldestTimestamp()
   return storage_.back().stamp_;
 }
 
-void TimeCache::pruneList()
-{
+void TimeCache::pruneList() {
   TimePoint latest_time = storage_.begin()->stamp_;
 
   while (!storage_.empty() && storage_.back().stamp_ + max_storage_time_ < latest_time) {
