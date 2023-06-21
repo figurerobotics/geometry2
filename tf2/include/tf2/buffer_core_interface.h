@@ -31,7 +31,7 @@
 #include <string>
 #include <vector>
 
-#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "tf2/msg.h"
 #include "tf2/time.h"
 #include "tf2/visibility_control.h"
 
@@ -43,6 +43,7 @@ namespace tf2 {
  * This class provides a simple abstract interface for looking up relationships between arbitrary
  * frames of a system.
  */
+template <class MessageT = msg::TransformStamped>
 class BufferCoreInterface {
  public:
   TF2_PUBLIC
@@ -62,9 +63,8 @@ class BufferCoreInterface {
    * \return The transform between the frames.
    */
   TF2_PUBLIC
-  virtual geometry_msgs::msg::TransformStamped lookupTransform(
-      const std::string& target_frame, const std::string& source_frame,
-      const tf2::TimePoint& time) const = 0;
+  virtual MessageT lookupTransform(const std::string& target_frame, const std::string& source_frame,
+                                   const tf2::TimePoint& time) const = 0;
 
   /**
    * \brief Get the transform between two frames by frame ID assuming fixed frame.
@@ -77,10 +77,11 @@ class BufferCoreInterface {
    * \return The transform between the frames.
    */
   TF2_PUBLIC
-  virtual geometry_msgs::msg::TransformStamped lookupTransform(
-      const std::string& target_frame, const tf2::TimePoint& target_time,
-      const std::string& source_frame, const tf2::TimePoint& source_time,
-      const std::string& fixed_frame) const = 0;
+  virtual MessageT lookupTransform(const std::string& target_frame,
+                                   const tf2::TimePoint& target_time,
+                                   const std::string& source_frame,
+                                   const tf2::TimePoint& source_time,
+                                   const std::string& fixed_frame) const = 0;
 
   /**
    * \brief Test if a transform is possible.

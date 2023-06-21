@@ -43,8 +43,7 @@
 #include <utility>
 #include <vector>
 
-#include "LinearMath/Transform.h"
-#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "tf2/LinearMath/Transform.h"
 #include "tf2/buffer_core_interface.h"
 #include "tf2/exceptions.h"
 #include "tf2/transform_storage.h"
@@ -85,7 +84,9 @@ static constexpr Duration BUFFER_CORE_DEFAULT_CACHE_TIME = std::chrono::seconds(
  *
  * All function calls which pass frame ids can potentially throw the exception tf::LookupException
  */
-class BufferCore : public BufferCoreInterface {
+
+template <class MessageT = msg::TransformStamped>
+class BufferCore : public BufferCoreInterface<MessageT> {
  public:
   /************* Constants ***********************/
   //!< Maximum graph search depth (deeper graphs will be assumed to have loops)
@@ -111,11 +112,12 @@ class BufferCore : public BufferCoreInterface {
    * \param transform The transform to store
    * \param authority The source of the information for this transform
    * \param is_static Record this transform as a static transform.  It will be good across all time.
-   * (This cannot be changed after the first call.) \return True unless an error occured
+   * (This cannot be changed after the first call.)
+   * \return True unless an error occured
    */
   TF2_PUBLIC
-  bool setTransform(const geometry_msgs::msg::TransformStamped& transform,
-                    const std::string& authority, bool is_static = false);
+  bool setTransform(const MessageT& transform, const std::string& authority,
+                    bool is_static = false);
 
   /*********** Accessors *************/
 
@@ -129,9 +131,8 @@ class BufferCore : public BufferCoreInterface {
    * tf2::ExtrapolationException, tf2::InvalidArgumentException
    */
   TF2_PUBLIC
-  geometry_msgs::msg::TransformStamped lookupTransform(const std::string& target_frame,
-                                                       const std::string& source_frame,
-                                                       const TimePoint& time) const override;
+  MessageT lookupTransform(const std::string& target_frame, const std::string& source_frame,
+                           const TimePoint& time) const override;
 
   /** \brief Get the transform between two frames by frame ID assuming fixed frame.
    * \param target_frame The frame to which data should be transformed
@@ -146,10 +147,9 @@ class BufferCore : public BufferCoreInterface {
    */
 
   TF2_PUBLIC
-  geometry_msgs::msg::TransformStamped lookupTransform(
-      const std::string& target_frame, const TimePoint& target_time,
-      const std::string& source_frame, const TimePoint& source_time,
-      const std::string& fixed_frame) const override;
+  MessageT lookupTransform(const std::string& target_frame, const TimePoint& target_time,
+                           const std::string& source_frame, const TimePoint& source_time,
+                           const std::string& fixed_frame) const override;
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform

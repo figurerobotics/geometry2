@@ -19,13 +19,10 @@
 #include <tf2/convert.h>
 #include <tf2/transform_datatypes.h>
 
-#include <geometry_msgs/msg/quaternion.hpp>
-#include <geometry_msgs/msg/quaternion_stamped.hpp>
-
 namespace tf2 {
 
 // Forward declare functions needed in this header
-void fromMsg(const geometry_msgs::msg::Quaternion& in, tf2::Quaternion& out);
+void fromMsg(const msg::Quaternion& in, tf2::Quaternion& out);
 
 namespace impl {
 
@@ -36,20 +33,20 @@ namespace impl {
 inline tf2::Quaternion toQuaternion(const tf2::Quaternion& q) { return q; }
 
 /** Function needed for the generalization of toQuaternion
- * \param q a geometry_msgs::msg::Quaternion
+ * \param q a msg::Quaternion
  * \return a copy of the same quaternion as a tf2::Quaternion
  */
-inline tf2::Quaternion toQuaternion(const geometry_msgs::msg::Quaternion& q) {
+inline tf2::Quaternion toQuaternion(const msg::Quaternion& q) {
   tf2::Quaternion res;
   fromMsg(q, res);
   return res;
 }
 
 /** Function needed for the generalization of toQuaternion
- * \param q a geometry_msgs::msg::QuaternionStamped
+ * \param q a msg::QuaternionStamped
  * \return a copy of the same quaternion as a tf2::Quaternion
  */
-inline tf2::Quaternion toQuaternion(const geometry_msgs::msg::QuaternionStamped& q) {
+inline tf2::Quaternion toQuaternion(const msg::QuaternionStamped& q) {
   tf2::Quaternion res;
   fromMsg(q.quaternion, res);
   return res;
@@ -61,19 +58,18 @@ inline tf2::Quaternion toQuaternion(const geometry_msgs::msg::QuaternionStamped&
  */
 template <typename T>
 tf2::Quaternion toQuaternion(const tf2::Stamped<T>& t) {
-  geometry_msgs::msg::QuaternionStamped q =
-      toMsg<tf2::Stamped<T>, geometry_msgs::msg::QuaternionStamped>(t);
+  msg::QuaternionStamped q = toMsg<tf2::Stamped<T>, msg::QuaternionStamped>(t);
   return toQuaternion(q);
 }
 
 /** Generic version of toQuaternion. It tries to convert the argument
- * to a geometry_msgs::msg::Quaternion
+ * to a msg::Quaternion
  * \param t some object
  * \return a copy of the same quaternion as a tf2::Quaternion
  */
 template <typename T>
 tf2::Quaternion toQuaternion(const T& t) {
-  geometry_msgs::msg::Quaternion q = toMsg<T, geometry_msgs::msg::QuaternionStamped>(t);
+  msg::Quaternion q = toMsg<T, msg::QuaternionStamped>(t);
   return toQuaternion(q);
 }
 
