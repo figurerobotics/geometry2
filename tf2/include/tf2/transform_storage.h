@@ -30,35 +30,28 @@
 #ifndef TF2__TRANSFORM_STORAGE_H_
 #define TF2__TRANSFORM_STORAGE_H_
 
-#include "tf2/LinearMath/Vector3.h"
 #include "tf2/LinearMath/Quaternion.h"
+#include "tf2/LinearMath/Vector3.h"
 #include "tf2/time.h"
 #include "tf2/visibility_control.h"
 
-namespace tf2
-{
+namespace tf2 {
 typedef uint32_t CompactFrameID;
 
 /** \brief Storage for transforms and their parent */
-class TransformStorage
-{
-public:
+class TransformStorage {
+ public:
   TF2_PUBLIC
   TransformStorage();
   TF2_PUBLIC
-  TransformStorage(
-    const TimePoint & stamp, const Quaternion & q, const Vector3 & t, CompactFrameID frame_id,
-    CompactFrameID child_frame_id);
+  TransformStorage(const TimePoint& stamp, const Quaternion& q, const Vector3& t,
+                   CompactFrameID frame_id, CompactFrameID child_frame_id);
 
   TF2_PUBLIC
-  TransformStorage(const TransformStorage & rhs)
-  {
-    *this = rhs;
-  }
+  TransformStorage(const TransformStorage& rhs) { *this = rhs; }
 
   TF2_PUBLIC
-  TransformStorage & operator=(const TransformStorage & rhs)
-  {
+  TransformStorage& operator=(const TransformStorage& rhs) {
     rotation_ = rhs.rotation_;
     translation_ = rhs.translation_;
     stamp_ = rhs.stamp_;

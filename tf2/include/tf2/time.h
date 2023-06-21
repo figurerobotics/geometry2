@@ -35,8 +35,7 @@
 
 #include "tf2/visibility_control.h"
 
-namespace tf2
-{
+namespace tf2 {
 using Duration = std::chrono::nanoseconds;
 using TimePoint = std::chrono::time_point<std::chrono::system_clock, Duration>;
 
@@ -54,13 +53,13 @@ TF2_PUBLIC
 TimePoint timeFromSec(double t_sec);
 
 TF2_PUBLIC
-double durationToSec(const tf2::Duration & input);
+double durationToSec(const tf2::Duration& input);
 
 TF2_PUBLIC
-double timeToSec(const TimePoint & timepoint);
+double timeToSec(const TimePoint& timepoint);
 
 TF2_PUBLIC
-std::string displayTimePoint(const TimePoint & stamp);
+std::string displayTimePoint(const TimePoint& stamp);
 
 }  // namespace tf2
 
