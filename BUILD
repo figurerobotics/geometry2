@@ -4,11 +4,11 @@ package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "tf2",
-    srcs = glob(["src/**/*.cpp"]),
+    srcs = glob(["tf2/src/**/*.cpp"]),
     hdrs = glob([
-        "include/tf2/**/*.h",
-        "include/tf2/**/*.inl",
+        "tf2/include/tf2/**/*.h",
+        "tf2/include/tf2/**/*.inl",
     ]),
     copts = ["--std=c++20"],
-    strip_include_prefix = "include",
+    strip_include_prefix = "tf2/include",
 )
